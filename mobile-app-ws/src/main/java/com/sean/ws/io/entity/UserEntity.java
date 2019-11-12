@@ -34,8 +34,10 @@ public class UserEntity implements Serializable{
 	@Column(nullable=false)
 	private String emailVerificationToken;
 	
-	@Column(nullable=false, columnDefinition = "boolean default false")
-	private Boolean emailVerificationStatus;
+	// the default method below not working on all platform
+	//@Column(nullable=false, columnDefinition = "boolean default false")
+	@Column(nullable=false)
+	private Boolean emailVerificationStatus = false;
 
 	public long getId() {
 		return id;
