@@ -17,6 +17,9 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public UserDto createUser(UserDto user) {
+		
+		if(userRepository.findByEmail(user.getEmail()) != null) throw new RuntimeException("Record already exist");
+		
 		UserEntity userEntity = new UserEntity();
 		
 		// copy properties from userDto to userEntity
@@ -24,7 +27,7 @@ public class UserServiceImpl implements UserService{
 		
 		userEntity.setEncryptedPassword("test");
 		userEntity.setUserId("testUserId");
-		userEntity.setEmailVerificationToken("email verification token");
+		//userEntity.setEmailVerificationToken("email verification token");
 		
 		UserEntity storedUserDetails = userRepository.save(userEntity);
 		
