@@ -1,5 +1,6 @@
 package com.sean.ws.ui.controller;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sean.ws.service.UserService;
+import com.sean.ws.shared.dto.UserDto;
 import com.sean.ws.ui.model.request.UserDetailsRequestModel;
 import com.sean.ws.ui.model.response.UserRest;
 
@@ -29,7 +31,15 @@ public class UserController {
 	@PostMapping
 	public UserRest CreateUser(@RequestBody UserDetailsRequestModel userDetails)
 	{
-		return null;
+		UserRest returnValue = new UserRest();
+		
+		UserDto userDto = new UserDto();
+		BeanUtils.copyProperties(userDetails, userDto);
+		
+		UserDto createdUser = userService.createUser(userDto);
+		BeanUtils.copyProperties(createdUser, returnValue);
+		
+		return returnValue;
 	}
 	
 	@PutMapping
