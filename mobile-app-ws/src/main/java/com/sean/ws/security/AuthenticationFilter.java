@@ -36,6 +36,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
 			throws AuthenticationException {
+		System.out.println("attemptAuthentication");
 		try
 		{
 			UserLoginRequestModel creds = new ObjectMapper().readValue(req.getInputStream(), UserLoginRequestModel.class);
@@ -54,7 +55,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
 			Authentication auth) throws IOException, ServletException {
-		
+		System.out.println("successfulAuthentication");
 		String userName = ((User) auth.getPrincipal()).getUsername();
 		
 		// https://github.com/jwtk/jjwt for more info

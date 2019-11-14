@@ -5,6 +5,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 //after making the UserService interface extends UserDetailsService
 //import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,8 +28,10 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable().authorizeRequests()
 		.antMatchers(HttpMethod.POST, "/users").permitAll()
-        .anyRequest().authenticated().and().addFilter(getAuthenticationFilter())
-        .addFilter(new AuthorizationFilter(authenticationManager()));
+        .anyRequest().authenticated()
+		.and().addFilter(getAuthenticationFilter())
+        .addFilter(new AuthorizationFilter(authenticationManager()))
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
 	
 	@Override
@@ -41,5 +44,5 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 		filter.setFilterProcessesUrl("/users/login");
 		return filter;
 	}
-
+	
 }
