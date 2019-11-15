@@ -55,14 +55,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
 			Authentication auth) throws IOException, ServletException {
-		System.out.println("successfulAuthentication");
 		String userName = ((User) auth.getPrincipal()).getUsername();
 		
 		// https://github.com/jwtk/jjwt for more info
 		String token = Jwts.builder()
 				.setSubject(userName)
 				.setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
-				.signWith(SignatureAlgorithm.HS512, SecurityConstants.TOKEN_SECRET)
+				.signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret())
 				.compact();
 		
 		UserService userService = (UserService)SpringApplicationContext.getBean("userServiceImpl");
