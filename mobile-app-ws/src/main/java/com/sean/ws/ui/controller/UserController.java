@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sean.ws.service.UserService;
 import com.sean.ws.shared.dto.UserDto;
 import com.sean.ws.ui.model.request.UserDetailsRequestModel;
+import com.sean.ws.ui.model.response.ErrorMessages;
 import com.sean.ws.ui.model.response.UserRest;
 
 @RestController
@@ -23,6 +24,12 @@ public class UserController {
 	
 	@Autowired
 	UserService userService;
+	
+	@GetMapping("/hello")
+	public String hello()
+	{
+		return "hello";
+	}
 	
 	@GetMapping(path="/{id}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
 	public UserRest getUser(@PathVariable String id)
@@ -39,9 +46,11 @@ public class UserController {
 			consumes = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
 			produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
 			)
-	public UserRest CreateUser(@RequestBody UserDetailsRequestModel userDetails)
+	public UserRest CreateUser(@RequestBody UserDetailsRequestModel userDetails) throws Exception
 	{
 		UserRest returnValue = new UserRest();
+		
+		if(userDetails.getFirstName().isEmpty()) throw new Exception(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
 		
 		UserDto userDto = new UserDto();
 		BeanUtils.copyProperties(userDetails, userDto);

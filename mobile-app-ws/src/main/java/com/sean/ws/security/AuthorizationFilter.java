@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -25,20 +26,54 @@ public class AuthorizationFilter extends BasicAuthenticationFilter{
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
 		
-		String header = req.getHeader(SecurityConstants.HEADER_STRING);
-		
-		if(header != null || header.startsWith(SecurityConstants.TOKEN_PREFIX))
-		{
+		try {
+			System.out.println("try");
 			UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
+			if(authentication == null) {
+				chain.doFilter(req, res);
+				return;
+			}
+			
+			System.out.println("not  null");
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			chain.doFilter(req, res);
+			return;
+
+		} catch (AuthenticationException failed) {
+			System.out.println("fail");
+			SecurityContextHolder.clearContext();
+			onUnsuccessfulAuthentication(req, res, failed);
+			chain.doFilter(req, res);
+			return;
+		}
+	}
+	/*
+	@Override
+	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+			throws IOException, ServletException {
+		
+		//String header = req.getHeader(SecurityConstants.HEADER_STRING);
+		try {
+			UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
+		//  || header.startsWith(SecurityConstants.TOKEN_PREFIX)
+		if(authentication != null)
+		{
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			chain.doFilter(req, res);
 		}
-		return;
+		else
+		{
+			//SecurityContextHolder.getContext().setAuthentication(null);
+			System.out.println("null header");
+			return;
+		}
+		} catch (AuthenticationException failed) {
+			throw new IOException("hahaha");
+		}
 	}
-
+	*/
 	private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest req) {
 		String token = req.getHeader(SecurityConstants.HEADER_STRING);
-		System.out.println("getAuthentication");
 		if(token != null) {
 			token = token.replace(SecurityConstants.TOKEN_PREFIX, "");
 			
@@ -51,7 +86,6 @@ public class AuthorizationFilter extends BasicAuthenticationFilter{
 			if(user != null) {
 				return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
 			}
-			
 			return null;
 		}
 		return null;
