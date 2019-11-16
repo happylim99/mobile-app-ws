@@ -29,6 +29,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter{
 		try {
 			System.out.println("try");
 			UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
+			System.out.println(authentication);
 			if(authentication == null) {
 				chain.doFilter(req, res);
 				return;
@@ -74,15 +75,16 @@ public class AuthorizationFilter extends BasicAuthenticationFilter{
 	*/
 	private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest req) {
 		String token = req.getHeader(SecurityConstants.HEADER_STRING);
+
 		if(token != null) {
 			token = token.replace(SecurityConstants.TOKEN_PREFIX, "");
-			
+
 			String user = Jwts.parser()
 					.setSigningKey(SecurityConstants.getTokenSecret())
 					.parseClaimsJws(token)
 					.getBody()
 					.getSubject();
-			
+					
 			if(user != null) {
 				return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
 			}
