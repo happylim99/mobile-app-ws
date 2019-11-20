@@ -12,11 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sean.ws.exceptions.UserServiceException;
 import com.sean.ws.service.UserService;
 import com.sean.ws.shared.dto.UserDto;
 import com.sean.ws.ui.model.request.UserDetailsRequestModel;
-import com.sean.ws.ui.model.response.ErrorMessages;
 import com.sean.ws.ui.model.response.UserRest;
 
 @RestController
@@ -51,7 +49,8 @@ public class UserController {
 	{
 		UserRest returnValue = new UserRest();
 		
-		if(userDetails.getFirstName().isEmpty()) throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
+		if(userDetails.getFirstName().isEmpty()) throw new NullPointerException("null pointer exception");
+		//if(userDetails.getFirstName().isEmpty()) throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
 		
 		UserDto userDto = new UserDto();
 		BeanUtils.copyProperties(userDetails, userDto);
