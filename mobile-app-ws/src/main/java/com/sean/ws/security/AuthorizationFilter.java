@@ -73,7 +73,6 @@ public class AuthorizationFilter extends BasicAuthenticationFilter{
 		String token = req.getHeader(SecurityConstants.HEADER_STRING);
 
 		if(token != null) {
-			System.out.println("not null");
 			token = token.replace(SecurityConstants.TOKEN_PREFIX, "");
 
 			String user = Jwts.parser()
