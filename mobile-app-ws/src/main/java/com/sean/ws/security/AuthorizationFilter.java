@@ -27,21 +27,17 @@ public class AuthorizationFilter extends BasicAuthenticationFilter{
 			throws IOException, ServletException {
 		
 		try {
-			System.out.println("try");
 			UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
-			System.out.println(authentication);
 			if(authentication == null) {
 				chain.doFilter(req, res);
 				return;
 			}
 			
-			System.out.println("not  null");
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			chain.doFilter(req, res);
 			return;
 
 		} catch (AuthenticationException failed) {
-			System.out.println("fail");
 			SecurityContextHolder.clearContext();
 			onUnsuccessfulAuthentication(req, res, failed);
 			chain.doFilter(req, res);
@@ -77,6 +73,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter{
 		String token = req.getHeader(SecurityConstants.HEADER_STRING);
 
 		if(token != null) {
+			System.out.println("not null");
 			token = token.replace(SecurityConstants.TOKEN_PREFIX, "");
 
 			String user = Jwts.parser()

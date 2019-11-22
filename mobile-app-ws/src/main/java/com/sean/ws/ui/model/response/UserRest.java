@@ -7,6 +7,18 @@ public class UserRest {
 	private String lastName;
 	private String email;
 
+	public UserRest() {
+		super();
+	}
+
+	public UserRest(String userId, String firstName, String lastName, String email) {
+		super();
+		this.userId = userId;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+	}
+
 	public String getUserId() {
 		return userId;
 	}

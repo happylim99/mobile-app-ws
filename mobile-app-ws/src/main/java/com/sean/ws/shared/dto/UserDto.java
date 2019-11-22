@@ -16,6 +16,22 @@ public class UserDto implements Serializable {
 	private String emailVerificationToken;
 	private Boolean emailVerificationStatus = false;
 
+	public UserDto() {
+		super();
+	}
+
+	public UserDto(long id, String userId, String firstName, String lastName, String email, String encryptedPassword, String emailVerificationToken, Boolean emailVerificationStatus) {
+		super();
+		this.id = id;
+		this.userId = userId;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.encryptedPassword = encryptedPassword;
+		this.emailVerificationToken = emailVerificationToken;
+		this.emailVerificationStatus = emailVerificationStatus;
+	}
+
 	public long getId() {
 		return id;
 	}
