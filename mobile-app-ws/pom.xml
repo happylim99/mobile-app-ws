@@ -14,6 +14,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>mobile-app-ws</name>
 	<description>Mobile app ws</description>
+	<packaging>war</packaging>
 
 	<properties>
 		<java.version>11</java.version>
@@ -50,6 +51,11 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-tomcat</artifactId>
+		 	<scope>provided</scope>
 		</dependency>
 
 		<dependency>
