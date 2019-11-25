@@ -59,7 +59,7 @@ public class UserController {
 			)
 	public UserRest CreateUser(@RequestBody UserDetailsRequestModel userDetails) throws Exception
 	{
-		UserRest returnValue = new UserRest();
+		//UserRest returnValue = new UserRest();
 		
 		if(userDetails.getFirstName().isEmpty()) throw new NullPointerException("null pointer exception");
 		//if(userDetails.getFirstName().isEmpty()) throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
@@ -72,7 +72,8 @@ public class UserController {
 		UserDto userDto = modelMapper.map(userDetails, UserDto.class);
 		
 		UserDto createdUser = userService.createUser(userDto);
-		BeanUtils.copyProperties(createdUser, returnValue);
+		//BeanUtils.copyProperties(createdUser, returnValue);
+		UserRest returnValue = modelMapper.map(createdUser, UserRest.class);
 		
 		return returnValue;
 	}
