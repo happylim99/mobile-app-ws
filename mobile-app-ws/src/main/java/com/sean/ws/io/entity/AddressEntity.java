@@ -1,13 +1,45 @@
-package com.sean.ws.shared.dto;
+package com.sean.ws.io.entity;
 
-public class AddressDto {
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import com.sean.ws.shared.dto.UserDto;
+
+@Entity(name="addresses")
+public class AddressEntity implements Serializable {
+
+	private static final long serialVersionUID = -1751706427392446542L;
+	
+	@Id
+	@GeneratedValue
 	private long id;
+	
+	@Column(length=30, nullable=false)
 	private String addressId;
+	
+	@Column(length=15, nullable=false)
 	private String city;
+	
+	@Column(length=15, nullable=false)
 	private String country;
+	
+	@Column(length=100, nullable=false)
 	private String streetName;
+	
+	@Column(length=7, nullable=false)
 	private String postalCode;
+	
+	@Column(length=10, nullable=false)
 	private String type;
+	
+	@ManyToOne
+	@JoinColumn(name="user_id")
 	private UserDto userDetails;
 
 	public long getId() {
