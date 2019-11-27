@@ -1,6 +1,7 @@
 package com.sean.ws.ui.controller;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ import com.sean.ws.ui.model.response.RequestOperationStatus;
 import com.sean.ws.ui.model.response.UserRest;
 
 @RestController
-@RequestMapping("users") //http:localhost:8080/users
+@RequestMapping("/users") //http:localhost:8080/users
 public class UserController {
 	
 	@Autowired
@@ -201,9 +202,13 @@ public class UserController {
 		*/
 		//BeanUtils.copyProperties(userDto, returnValue);
 		
-		Link addressLink = linkTo(UserController.class).slash(id).slash("addresses").slash(address).withSelfRel();
-		Link userLink = linkTo(UserController.class).slash(id).withRel("user");
-		Link addressesLink = linkTo(UserController.class).slash(id).slash("addresses").withRel("addresses");
+		//Link addressLink = linkTo(UserController.class).slash(id).slash("addresses").slash(address).withSelfRel();
+		//Link userLink = linkTo(UserController.class).slash(id).withRel("user");
+		//Link addressesLink = linkTo(UserController.class).slash(id).slash("addresses").withRel("addresses");
+		
+		Link addressLink = linkTo(methodOn(UserController.class).getUserAddress(id, address)).withSelfRel();
+		Link userLink = linkTo(methodOn(UserController.class).getUser(id)).withRel("user");
+		Link addressesLink = linkTo(methodOn(UserController.class).getUserAddresses(1, 3, id)).withRel("addresses");
 		
 		returnValue.add(addressLink);
 		returnValue.add(userLink);
