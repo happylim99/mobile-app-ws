@@ -1,7 +1,8 @@
 package com.sean.ws;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
+//@RunWith(SpringRunner.class)
 //@SpringBootTest
 class MobileAppWsApplicationTests {
 

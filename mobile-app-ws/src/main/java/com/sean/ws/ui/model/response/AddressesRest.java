@@ -1,8 +1,10 @@
 package com.sean.ws.ui.model.response;
 
+import org.springframework.hateoas.ResourceSupport;
+
 import com.sean.ws.shared.dto.AddressDto;
 
-public class AddressesRest {
+public class AddressesRest extends ResourceSupport {
 	private String addressId;
 	private String city;
 	private String country;

@@ -1,5 +1,7 @@
 package com.sean.ws.ui.controller;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -186,11 +189,25 @@ public class UserController {
 	{		
 		//UserRest returnValue = new UserRest();
 		
+		
 		AddressDto addressDto = addressService.getAddressByAddressId(address);
 		ModelMapper modelMapper = new ModelMapper();
 		AddressesRest returnValue = modelMapper.map(addressDto, AddressesRest.class);
+		/*
+		List<Link> links = new ArrayList<Link>(Arrays.asList(
+				new Link("http://localhost:8080/mobile-app-ws/users")
+				));
+		returnValue.add(links);
+		*/
 		//BeanUtils.copyProperties(userDto, returnValue);
 		
+		Link addressLink = linkTo(UserController.class).slash(id).slash("addresses").slash(address).withSelfRel();
+		Link userLink = linkTo(UserController.class).slash(id).withRel("user");
+		Link addressesLink = linkTo(UserController.class).slash(id).slash("addresses").withRel("addresses");
+		
+		returnValue.add(addressLink);
+		returnValue.add(userLink);
+		returnValue.add(addressesLink);
 		return returnValue;
 	}
 
