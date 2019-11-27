@@ -1,22 +1,33 @@
 package com.sean.ws.ui.model.response;
 
+import java.util.List;
+
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+
+import com.sean.ws.shared.dto.UserDto;
+
 public class UserRest {
 
 	private String userId;
 	private String firstName;
 	private String lastName;
 	private String email;
+	private List<AddressesRest> addresses;
 
 	public UserRest() {
 		super();
 	}
 
-	public UserRest(String userId, String firstName, String lastName, String email) {
+	public UserRest(UserDto user) {
 		super();
-		this.userId = userId;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
+		ModelMapper modelMapper = new ModelMapper();
+		this.userId = user.getUserId();
+		this.firstName = user.getFirstName();
+		this.lastName = user.getLastName();
+		this.email = user.getEmail();
+		//this.addresses = (List<AddressesRest>) user.getAddresses().stream().map(address -> new AddressesRest(address).collect(Collectors.toList()));
+		this.addresses = modelMapper.map(user.getAddresses(), new TypeToken<List<AddressesRest>>(){}.getType());
 	}
 
 	public String getUserId() {
@@ -49,6 +60,14 @@ public class UserRest {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public List<AddressesRest> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<AddressesRest> addresses) {
+		this.addresses = addresses;
 	}
 
 }

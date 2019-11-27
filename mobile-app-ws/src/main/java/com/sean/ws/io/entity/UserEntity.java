@@ -10,6 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity(name="users")
 public class UserEntity implements Serializable{
 
@@ -43,6 +45,7 @@ public class UserEntity implements Serializable{
 	@Column(nullable=false)
 	private Boolean emailVerificationStatus = false;
 	
+	@JsonIgnoreProperties("user")
 	@OneToMany(mappedBy="userDetails", cascade=CascadeType.ALL)
 	private List<AddressEntity> addresses;
 

@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import com.sean.ws.io.entity.UserEntity;
 import com.sean.ws.shared.dto.UserDto;
 
 public interface UserService extends UserDetailsService{
@@ -15,7 +14,7 @@ public interface UserService extends UserDetailsService{
 	UserDto updateUser(String userId, UserDto user);
 	void deleteUser(String userId);
 	List<UserDto> getUsers(int page, int limit);
-	Page<UserEntity> getAllUsers(int page, int limit);
+	//Page<UserEntity> getAllUsers(int page, int limit);
 	Page<UserDto> getAllUsers2(int page, int limit);
 	
 	/*

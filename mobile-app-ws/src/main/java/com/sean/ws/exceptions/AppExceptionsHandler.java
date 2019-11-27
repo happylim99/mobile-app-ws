@@ -29,4 +29,11 @@ public class AppExceptionsHandler {
 		return new ResponseEntity<>(errorMessage, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
+	@ExceptionHandler(value = {NotFoundException.class})
+	public ResponseEntity<Object> handleNotFoundException(Exception ex, WebRequest request)
+	{
+		ErrorMessage errorMessage = new ErrorMessage(new Date(), ex.getMessage());
+		return new ResponseEntity<>(errorMessage, new HttpHeaders(), HttpStatus.NOT_FOUND);
+	}
+	
 }

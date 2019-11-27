@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
 		
 		return returnValue;
 	}
-	
+	/*
 	@Override
 	public Page<UserEntity> getAllUsers(int page, int limit) {
 		
@@ -163,7 +163,7 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findAll(pageableRequest);
 		
 	}
-
+	*/
 	@Override
 	public Page<UserDto> getAllUsers2(int page, int limit) {
 		if(page>0) page = page-1;
@@ -173,15 +173,7 @@ public class UserServiceImpl implements UserService {
 		Page<UserEntity> users = userRepository.findAll(pageable);
 		
 		int totalElements = (int) users.getTotalElements();
-		return new PageImpl<UserDto>(users.stream().map(user -> new UserDto(
-				user.getId(),
-				user.getUserId(),
-				user.getFirstName(),
-				user.getLastName(),
-				user.getEmail(),
-				user.getEncryptedPassword(),
-				user.getEmailVerificationToken(),
-				user.getEmailVerificationStatus()))
+		return new PageImpl<UserDto>(users.stream().map(user -> new UserDto(user))
 				.collect(Collectors.toList()), pageable, totalElements);
 	}
 

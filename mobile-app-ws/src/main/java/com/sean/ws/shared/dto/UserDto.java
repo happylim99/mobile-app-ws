@@ -3,6 +3,11 @@ package com.sean.ws.shared.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+
+import com.sean.ws.io.entity.UserEntity;
+
 public class UserDto implements Serializable {
 
 	//delete the line below to generate the UID.
@@ -21,17 +26,19 @@ public class UserDto implements Serializable {
 	public UserDto() {
 		super();
 	}
-
-	public UserDto(long id, String userId, String firstName, String lastName, String email, String encryptedPassword, String emailVerificationToken, Boolean emailVerificationStatus) {
+	
+	public UserDto(UserEntity user) {
 		super();
-		this.id = id;
-		this.userId = userId;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.encryptedPassword = encryptedPassword;
-		this.emailVerificationToken = emailVerificationToken;
-		this.emailVerificationStatus = emailVerificationStatus;
+		ModelMapper modelMapper = new ModelMapper();
+		this.id = user.getId();
+		this.userId = user.getUserId();
+		this.firstName = user.getFirstName();
+		this.lastName = user.getLastName();
+		this.email = user.getEmail();
+		this.encryptedPassword = user.getEncryptedPassword();
+		this.emailVerificationToken = user.getEmailVerificationToken();
+		this.emailVerificationStatus = user.getEmailVerificationStatus();
+		this.addresses = modelMapper.map(user.getAddresses(), new TypeToken<List<AddressDto>>(){}.getType());
 	}
 
 	public long getId() {

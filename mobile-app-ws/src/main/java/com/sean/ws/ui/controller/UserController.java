@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,9 +23,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sean.ws.service.AddressService;
 import com.sean.ws.service.UserService;
+import com.sean.ws.shared.dto.AddressDto;
 import com.sean.ws.shared.dto.UserDto;
 import com.sean.ws.ui.model.request.UserDetailsRequestModel;
+import com.sean.ws.ui.model.response.AddressesRest;
 import com.sean.ws.ui.model.response.OperationStatusModel;
 import com.sean.ws.ui.model.response.RequestOperationStatus;
 import com.sean.ws.ui.model.response.UserRest;
@@ -36,6 +40,9 @@ public class UserController {
 	@Autowired
 	UserService userService;
 	
+	@Autowired
+	AddressService addressService;
+	
 	@GetMapping("/hello")
 	public String hello()
 	{
@@ -44,11 +51,13 @@ public class UserController {
 	
 	@GetMapping(path="/{id}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
 	public UserRest getUser(@PathVariable String id)
-	{
-		UserRest returnValue = new UserRest();
+	{		
+		//UserRest returnValue = new UserRest();
 		
 		UserDto userDto = userService.getUserByUserId(id);
-		BeanUtils.copyProperties(userDto, returnValue);
+		ModelMapper modelMapper = new ModelMapper();
+		UserRest returnValue = modelMapper.map(userDto, UserRest.class);
+		//BeanUtils.copyProperties(userDto, returnValue);
 		
 		return returnValue;
 	}
@@ -132,12 +141,57 @@ public class UserController {
 		
 		Pageable pageable = PageRequest.of(page, limit);
 		int totalElements = (int) users.getTotalElements();
-		return new PageImpl<UserRest>(users.stream().map(user -> new UserRest(
-				user.getUserId(),
-				user.getFirstName(),
-				user.getLastName(),
-				user.getEmail()))
+		return new PageImpl<UserRest>(users.stream().map(user -> new UserRest(user))
 				.collect(Collectors.toList()), pageable, totalElements);
+	}
+	
+	@GetMapping(path="/{id}/addresses2", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	public List<AddressesRest> getUserAddresses(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit, @PathVariable String id)
+	{
+		List<AddressesRest> returnValue = new ArrayList<>();
+		
+		List<AddressDto> addressDto = addressService.getAddresses(page, limit, id);
+		
+		if(addressDto != null && !addressDto.isEmpty())
+		{
+			java.lang.reflect.Type listType = new TypeToken<List<AddressesRest>>() {}.getType();
+			returnValue = new ModelMapper().map(addressDto, listType); 
+		}
+		
+		return returnValue;
+	}
+	
+	@GetMapping(path="/{id}/addresses", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	public Page<AddressesRest> getUserAddresses2(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit, @PathVariable String id)
+	{
+		//Page<AddressesRest> returnValue = new ArrayList<>();
+		
+		Page<AddressDto> addresses = addressService.getAllAddresses(page, limit, id);
+		
+		if(addresses != null && !addresses.isEmpty())
+		{
+			//java.lang.reflect.Type listType = new TypeToken<List<AddressesRest>>() {}.getType();
+			//returnValue = new ModelMapper().map(addressDto, listType);
+			Pageable pageable = PageRequest.of(page, limit);
+			int totalElements = (int) addresses.getTotalElements();
+			return new PageImpl<AddressesRest>(addresses.stream().map(address -> new AddressesRest(address))
+					.collect(Collectors.toList()), pageable, totalElements);
+		}
+		
+		return null;
+	}
+	
+	@GetMapping(path="/{id}/addresses/{address}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	public AddressesRest getUserAddress(@PathVariable String id, @PathVariable String address)
+	{		
+		//UserRest returnValue = new UserRest();
+		
+		AddressDto addressDto = addressService.getAddressByAddressId(address);
+		ModelMapper modelMapper = new ModelMapper();
+		AddressesRest returnValue = modelMapper.map(addressDto, AddressesRest.class);
+		//BeanUtils.copyProperties(userDto, returnValue);
+		
+		return returnValue;
 	}
 
 }

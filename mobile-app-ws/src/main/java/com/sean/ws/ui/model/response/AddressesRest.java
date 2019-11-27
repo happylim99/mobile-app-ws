@@ -1,22 +1,20 @@
-package com.sean.ws.shared.dto;
+package com.sean.ws.ui.model.response;
 
-import com.sean.ws.io.entity.AddressEntity;
+import com.sean.ws.shared.dto.AddressDto;
 
-public class AddressDto {
-	private long id;
+public class AddressesRest {
 	private String addressId;
 	private String city;
 	private String country;
 	private String streetName;
 	private String postalCode;
 	private String type;
-	private UserDto userDetails;
 
-	public AddressDto() {
+	public AddressesRest() {
 		super();
 	}
 
-	public AddressDto(AddressEntity address) {
+	public AddressesRest(AddressDto address) {
 		super();
 		this.addressId = address.getAddressId();
 		this.city = address.getCity();
@@ -24,15 +22,6 @@ public class AddressDto {
 		this.streetName = address.getStreetName();
 		this.postalCode = address.getPostalCode();
 		this.type = address.getType();
-		//this.userDetails = address.getUserDetails();
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
 	}
 
 	public String getAddressId() {
@@ -81,14 +70,6 @@ public class AddressDto {
 
 	public void setType(String type) {
 		this.type = type;
-	}
-
-	public UserDto getUserDetails() {
-		return userDetails;
-	}
-
-	public void setUserDetails(UserDto userDetails) {
-		this.userDetails = userDetails;
 	}
 
 }
