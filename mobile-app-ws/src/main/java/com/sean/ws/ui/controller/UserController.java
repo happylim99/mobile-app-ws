@@ -159,7 +159,16 @@ public class UserController {
 		if(addressDto != null && !addressDto.isEmpty())
 		{
 			java.lang.reflect.Type listType = new TypeToken<List<AddressesRest>>() {}.getType();
-			returnValue = new ModelMapper().map(addressDto, listType); 
+			returnValue = new ModelMapper().map(addressDto, listType);
+			
+			for (AddressesRest addressRest : returnValue) {
+				Link addressLink = linkTo(methodOn(UserController.class).getUserAddress(id, addressRest.getAddressId()))
+						.withSelfRel();
+				addressRest.add(addressLink);
+
+				Link userLink = linkTo(methodOn(UserController.class).getUser(id)).withRel("user");
+				addressRest.add(userLink);
+			}
 		}
 		
 		return returnValue;

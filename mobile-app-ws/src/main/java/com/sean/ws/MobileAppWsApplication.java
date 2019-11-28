@@ -19,6 +19,8 @@ public class MobileAppWsApplication extends SpringBootServletInitializer{
 
 	public static void main(String[] args) {
 		SpringApplication.run(MobileAppWsApplication.class, args);
+		//String str = "hello manually";
+		//System.out.println(reverseHello(str));
 	}
 	
 	@Bean
@@ -37,5 +39,22 @@ public class MobileAppWsApplication extends SpringBootServletInitializer{
 	{
 		return new AppProperties();
 	}
+	/*
+	public static String reverseHello(String str)
+	{
+		StringBuilder hello = new StringBuilder(str);
+		hello.reverse();
+		return hello.toString();
+	}
 	
+	public static String manualReverseHello(String str)
+	{
+		String reverseStr = "";
+		for(int i = str.length()-1; i >=0; i--)
+		{
+			reverseStr = reverseStr + str.charAt(i);
+		}
+		return reverseStr;
+	}
+	*/
 }

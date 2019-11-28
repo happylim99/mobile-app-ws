@@ -1,8 +1,12 @@
 package com.sean.ws.ui.model.response;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import org.springframework.hateoas.ResourceSupport;
 
 import com.sean.ws.shared.dto.AddressDto;
+import com.sean.ws.ui.controller.UserController;
 
 public class AddressesRest extends ResourceSupport {
 	private String addressId;
@@ -24,6 +28,8 @@ public class AddressesRest extends ResourceSupport {
 		this.streetName = address.getStreetName();
 		this.postalCode = address.getPostalCode();
 		this.type = address.getType();
+		add(linkTo(methodOn(UserController.class).getUserAddress("aaa", address.getAddressId())).withRel("self"));
+		add(linkTo(methodOn(UserController.class).getUserAddress("aaa", address.getAddressId())).withRel("self"));
 	}
 
 	public String getAddressId() {

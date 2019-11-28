@@ -1,13 +1,14 @@
 package com.sean.ws.ui.model.response;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
+import org.springframework.hateoas.ResourceSupport;
 
 import com.sean.ws.shared.dto.UserDto;
 
-public class UserRest {
+public class UserRest extends ResourceSupport{
 
 	private String userId;
 	private String firstName;
@@ -21,13 +22,14 @@ public class UserRest {
 
 	public UserRest(UserDto user) {
 		super();
-		ModelMapper modelMapper = new ModelMapper();
+		//ModelMapper modelMapper = new ModelMapper();
 		this.userId = user.getUserId();
 		this.firstName = user.getFirstName();
 		this.lastName = user.getLastName();
 		this.email = user.getEmail();
-		//this.addresses = (List<AddressesRest>) user.getAddresses().stream().map(address -> new AddressesRest(address).collect(Collectors.toList()));
-		this.addresses = modelMapper.map(user.getAddresses(), new TypeToken<List<AddressesRest>>(){}.getType());
+		this.addresses = user.getAddresses().stream().map(AddressesRest::new).collect(Collectors.toCollection(ArrayList::new));
+		
+		//this.addresses = modelMapper.map(user.getAddresses(), new TypeToken<List<AddressesRest>>(){}.getType());
 	}
 
 	public String getUserId() {
