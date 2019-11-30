@@ -3,6 +3,7 @@ package com.sean.ws.service;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import com.sean.ws.shared.dto.UserDto;
@@ -15,7 +16,7 @@ public interface UserService extends UserDetailsService{
 	void deleteUser(String userId);
 	List<UserDto> getUsers(int page, int limit);
 	//Page<UserEntity> getAllUsers(int page, int limit);
-	Page<UserDto> getAllUsers2(int page, int limit);
+	Page<UserDto> getAllUsers2(Pageable pageable);
 	
 	/*
 	@Query(value = "SELECT * FROM Person p WHERE p.firstName = :firstName",

@@ -15,7 +15,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
+import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sean.ws.service.AddressService;
 import com.sean.ws.service.UserService;
+import com.sean.ws.shared.Utils;
 import com.sean.ws.shared.dto.AddressDto;
 import com.sean.ws.shared.dto.UserDto;
 import com.sean.ws.ui.model.request.UserDetailsRequestModel;
@@ -37,6 +44,7 @@ import com.sean.ws.ui.model.response.OperationStatusModel;
 import com.sean.ws.ui.model.response.RequestOperationStatus;
 import com.sean.ws.ui.model.response.UserRest;
 
+@EnableHypermediaSupport(type = { HypermediaType.HAL })
 @RestController
 @RequestMapping("/users") //http:localhost:8080/users
 public class UserController {
@@ -46,6 +54,12 @@ public class UserController {
 	
 	@Autowired
 	AddressService addressService;
+	
+	@Autowired
+	PagedResourcesAssembler<AddressesRest> pagedResourcesAssembler;
+	
+	@Autowired
+	Utils utils;
 	
 	@GetMapping("/hello")
 	public String hello()
@@ -139,17 +153,47 @@ public class UserController {
 	}
 	
 	@GetMapping(path="/all", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-	public Page<UserRest> getAllUsers(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit)
+	//public Page<UserRest> getAllUsers(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit, @RequestParam(value="sort", defaultValue="firstName;asc", required=false) String[] sort)
+	//public Resources<UserRest> getAllUsers(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit)
+	public Resources<UserRest> getAllUsers(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit, @RequestParam(value="sort", defaultValue="firstName;asc", required=false) String[] sort)
 	{
-		Page<UserDto> users = userService.getAllUsers2(page, limit);
 		
-		Pageable pageable = PageRequest.of(page, limit);
-		int totalElements = (int) users.getTotalElements();
-		return new PageImpl<UserRest>(users.stream().map(user -> new UserRest(user))
-				.collect(Collectors.toList()), pageable, totalElements);
+		int thisPage = page-1;
+		
+		Sort allSorts = utils.sortProcessor(sort);
+		
+		Pageable pageable = PageRequest.of(thisPage, limit, allSorts);
+		
+		Page<UserDto> users = userService.getAllUsers2(pageable);
+		
+		Boolean isFirst = users.isFirst();
+		Boolean isLast = users.isLast();
+		int totalPages = users.getTotalPages();
+		int totalElements = (int)users.getTotalElements();
+		int betweenSize = 3;
+		List<Link> pageInfo = utils.paginationLinks(isFirst, isLast, totalPages, totalElements, page, limit, sort, betweenSize);
+    	//pageInfo.add(linkTo(methodOn(UserController.class).getUser("ccc")).withRel("next"));
+		
+		//Pageable pageable = PageRequest.of(page, limit);
+		//int totalElements = (int) users.getTotalElements();
+		
+		PageImpl<UserRest> pageImpl = new PageImpl<UserRest>(users.stream().map(user -> new UserRest(user)).collect(Collectors.toList()), pageable, totalElements);
+		//return new PageImpl<UserRest>(users.stream().map(user -> new UserRest(user)).collect(Collectors.toList()), pageable, totalElements);
+		/*
+		PagedResources<UserRest> resources = users.getContent().isEmpty() ?
+                (PagedResources<UserRest>) pagedResourcesAssembler.toEmptyResource(page, UserRest.class, link)
+                : pagedResourcesAssembler.toResource(page, resourceAssembler, link);
+
+        return ResponseEntity.ok(resources);
+        */
+		//return new Resources<>(pageImpl, linkTo(methodOn(UserController.class).getUser("aaa")).withRel("user"));
+		
+		//return pageImpl;
+		return new Resources<>(pageImpl, pageInfo);
+		//return new Resources<>(pageImpl, utils.pageInfo());
 	}
 	
-	@GetMapping(path="/{id}/addresses2", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	@GetMapping(path="/{id}/addresses2", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE, "application/hal+json"})
 	public List<AddressesRest> getUserAddresses(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit, @PathVariable String id)
 	{
 		List<AddressesRest> returnValue = new ArrayList<>();
@@ -174,28 +218,36 @@ public class UserController {
 		return returnValue;
 	}
 	
-	@GetMapping(path="/{id}/addresses", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-	public Page<AddressesRest> getUserAddresses2(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit, @PathVariable String id)
+	@GetMapping(path="/{id}/addresses", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE, "application/hal+json"})
+	public Page<AddressesRest> getUserAddresses2(@RequestParam(value="page", defaultValue="1", required=false) int page, @RequestParam(value="limit", defaultValue="25", required=false) int limit, @RequestParam(value="sort", defaultValue="city;asc", required=false) String[] sort, @PathVariable String id)
+	//public Resources<AddressesRest> getUserAddresses2(@RequestParam(value="page", defaultValue="1", required=false) int page, @RequestParam(value="limit", defaultValue="25", required=false) int limit, @RequestParam(value="sort", defaultValue="city;asc", required=false) String[] sort, @PathVariable String id)
 	{
 		//Page<AddressesRest> returnValue = new ArrayList<>();
+		Sort allSorts = utils.sortProcessor(sort);
 		
-		Page<AddressDto> addresses = addressService.getAllAddresses(page, limit, id);
+		Pageable pageable = PageRequest.of(page, limit, allSorts);
+		
+		Page<AddressDto> addresses = addressService.getAllAddresses(id, pageable);
 		
 		if(addresses != null && !addresses.isEmpty())
 		{
 			//java.lang.reflect.Type listType = new TypeToken<List<AddressesRest>>() {}.getType();
 			//returnValue = new ModelMapper().map(addressDto, listType);
-			Pageable pageable = PageRequest.of(page, limit);
+			//Pageable pageable = PageRequest.of(page, limit);
 			int totalElements = (int) addresses.getTotalElements();
-			return new PageImpl<AddressesRest>(addresses.stream().map(address -> new AddressesRest(address))
-					.collect(Collectors.toList()), pageable, totalElements);
+			
+			PageImpl<AddressesRest> pageImpl = new PageImpl<AddressesRest>(addresses.stream().map(address -> new AddressesRest(address)).collect(Collectors.toList()), pageable, totalElements);
+			
+			return pageImpl;
+			//return new Resources<>(pageImpl);
 		}
 		
 		return null;
 	}
 	
 	@GetMapping(path="/{id}/addresses/{address}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-	public AddressesRest getUserAddress(@PathVariable String id, @PathVariable String address)
+	//public Page<AddressesRest> getUserAddress(@PathVariable String id, @PathVariable String address)
+	public Resource<AddressesRest> getUserAddress(@PathVariable String id, @PathVariable String address)
 	{		
 		//UserRest returnValue = new UserRest();
 		
@@ -220,9 +272,10 @@ public class UserController {
 		Link addressesLink = linkTo(methodOn(UserController.class).getUserAddresses(1, 3, id)).withRel("addresses");
 		
 		returnValue.add(addressLink);
+		returnValue.add(addressLink);
 		returnValue.add(userLink);
 		returnValue.add(addressesLink);
-		return returnValue;
+		return new Resource<>(returnValue);
 	}
 
 }

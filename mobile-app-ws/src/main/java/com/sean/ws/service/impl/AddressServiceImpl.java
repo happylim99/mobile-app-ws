@@ -8,9 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.sean.ws.exceptions.NotFoundException;
@@ -50,10 +48,11 @@ public class AddressServiceImpl implements AddressService {
 	}
 	
 	@Override
-	public Page<AddressDto> getAllAddresses(int page, int limit, String userId) {
-		if(page>0) page = page-1;
+	//public Page<AddressDto> getAllAddresses(int page, int limit, String userId) {
+	public Page<AddressDto> getAllAddresses(String userId, Pageable pageable) {
+		//if(page>0) page = page-1;
 		
-		Pageable pageable = PageRequest.of(page, limit, Sort.by("city").descending().and(Sort.by("country").ascending()));
+		//Pageable pageable = PageRequest.of(page, limit, Sort.by("city").ascending().and(Sort.by("country").ascending()));
 		
 		UserEntity userEntity = userRepository.findByUserId(userId);
 		

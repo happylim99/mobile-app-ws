@@ -165,10 +165,10 @@ public class UserServiceImpl implements UserService {
 	}
 	*/
 	@Override
-	public Page<UserDto> getAllUsers2(int page, int limit) {
-		if(page>0) page = page-1;
+	public Page<UserDto> getAllUsers2(Pageable pageable) {
+		//if(page>0) page = page-1;
 		
-		Pageable pageable = PageRequest.of(page, limit, Sort.by("firstName").descending().and(Sort.by("lastName").ascending()));
+		//Pageable pageable = PageRequest.of(page, limit, Sort.by("firstName").descending().and(Sort.by("lastName").ascending()));
 		
 		Page<UserEntity> users = userRepository.findAll(pageable);
 		
