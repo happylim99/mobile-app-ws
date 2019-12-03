@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.hateoas.ResourceSupport;
-
 import com.sean.ws.shared.dto.UserDto;
 
-public class UserRest extends ResourceSupport{
+//public class UserRest extends ResourceSupport{
+public class UserRest {
 
 	private String userId;
 	private String firstName;
@@ -20,7 +19,7 @@ public class UserRest extends ResourceSupport{
 		super();
 	}
 
-	public UserRest(UserDto user) {
+	public UserRest(UserDto user, Object[] paginationLinks) {
 		super();
 		//ModelMapper modelMapper = new ModelMapper();
 		this.userId = user.getUserId();
@@ -28,7 +27,7 @@ public class UserRest extends ResourceSupport{
 		this.lastName = user.getLastName();
 		this.email = user.getEmail();
 		this.addresses = user.getAddresses().stream().map(AddressesRest::new).collect(Collectors.toCollection(ArrayList::new));
-		
+		//this.paginationLinks = new PaginationLinks(paginationLinks);
 		//this.addresses = modelMapper.map(user.getAddresses(), new TypeToken<List<AddressesRest>>(){}.getType());
 	}
 

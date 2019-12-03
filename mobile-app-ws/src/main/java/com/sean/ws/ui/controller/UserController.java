@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
@@ -40,6 +42,7 @@ import com.sean.ws.shared.dto.AddressDto;
 import com.sean.ws.shared.dto.UserDto;
 import com.sean.ws.ui.model.request.UserDetailsRequestModel;
 import com.sean.ws.ui.model.response.AddressesRest;
+import com.sean.ws.ui.model.response.DataRest;
 import com.sean.ws.ui.model.response.OperationStatusModel;
 import com.sean.ws.ui.model.response.RequestOperationStatus;
 import com.sean.ws.ui.model.response.UserRest;
@@ -60,6 +63,11 @@ public class UserController {
 	
 	@Autowired
 	Utils utils;
+	/*
+	@Autowired
+	private ServletContext context;
+	context.getPath();
+	*/
 	
 	@GetMapping("/hello")
 	public String hello()
@@ -155,7 +163,7 @@ public class UserController {
 	@GetMapping(path="/all", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
 	//public Page<UserRest> getAllUsers(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit, @RequestParam(value="sort", defaultValue="firstName;asc", required=false) String[] sort)
 	//public Resources<UserRest> getAllUsers(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit)
-	public Resources<UserRest> getAllUsers(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit, @RequestParam(value="sort", defaultValue="firstName;asc", required=false) String[] sort)
+	public Resources<UserRest> getAllUsers(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit, @RequestParam(value="sort", defaultValue="firstName;asc", required=false) String[] sort, HttpServletRequest request)
 	{
 		
 		int thisPage = page-1;
@@ -172,25 +180,59 @@ public class UserController {
 		int totalElements = (int)users.getTotalElements();
 		int betweenSize = 3;
 		List<Link> pageInfo = utils.paginationLinks(isFirst, isLast, totalPages, totalElements, page, limit, sort, betweenSize);
-    	//pageInfo.add(linkTo(methodOn(UserController.class).getUser("ccc")).withRel("next"));
+    	/*
+		List<Object> paginationLinks = new ArrayList<Object>();
+		paginationLinks.add(isFirst);
+		paginationLinks.add(isLast);
+		paginationLinks.add(totalPages);
+		paginationLinks.add(totalElements);
+		paginationLinks.add(page);
+		paginationLinks.add(limit);
+		paginationLinks.add(sort);
+		paginationLinks.add(betweenSize);
+		*/
+		Object[] obj = {isFirst, isLast, totalPages, totalElements, page, limit, sort, betweenSize};
 		
-		//Pageable pageable = PageRequest.of(page, limit);
-		//int totalElements = (int) users.getTotalElements();
+		//String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+		//System.out.println(baseUrl);
 		
-		PageImpl<UserRest> pageImpl = new PageImpl<UserRest>(users.stream().map(user -> new UserRest(user)).collect(Collectors.toList()), pageable, totalElements);
-		//return new PageImpl<UserRest>(users.stream().map(user -> new UserRest(user)).collect(Collectors.toList()), pageable, totalElements);
-		/*
-		PagedResources<UserRest> resources = users.getContent().isEmpty() ?
-                (PagedResources<UserRest>) pagedResourcesAssembler.toEmptyResource(page, UserRest.class, link)
-                : pagedResourcesAssembler.toResource(page, resourceAssembler, link);
-
-        return ResponseEntity.ok(resources);
-        */
-		//return new Resources<>(pageImpl, linkTo(methodOn(UserController.class).getUser("aaa")).withRel("user"));
+		PageImpl<UserRest> pageImpl = new PageImpl<UserRest>(users.stream().map(user -> new UserRest(user, obj)).collect(Collectors.toList()), pageable, totalElements);
 		
 		//return pageImpl;
 		return new Resources<>(pageImpl, pageInfo);
 		//return new Resources<>(pageImpl, utils.pageInfo());
+	}
+	
+	@GetMapping(path="/all/constructor/pagination", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	//public Page<UserRest> getAllUsers(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit, @RequestParam(value="sort", defaultValue="firstName;asc", required=false) String[] sort)
+	//public Resources<UserRest> getAllUsers(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit)
+	public DataRest getResponse(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit, @RequestParam(value="sort", defaultValue="firstName;asc", required=false) String[] sort, HttpServletRequest request)
+	{
+		int thisPage = page-1;
+		
+		Sort allSorts = utils.sortProcessor(sort);
+		
+		Pageable pageable = PageRequest.of(thisPage, limit, allSorts);
+		
+		Page<UserDto> users = userService.getAllUsers2(pageable);
+		
+		Boolean isFirst = users.isFirst();
+		Boolean isLast = users.isLast();
+		int totalPages = users.getTotalPages();
+		int totalElements = (int)users.getTotalElements();
+		int betweenSize = 3;
+		List<Link> pageInfo = utils.paginationLinks(isFirst, isLast, totalPages, totalElements, page, limit, sort, betweenSize);
+    	
+		Object[] obj = {isFirst, isLast, totalPages, totalElements, page, limit, sort, betweenSize};
+		
+		PageImpl<UserRest> pageImpl = new PageImpl<UserRest>(users.stream().map(user -> new UserRest(user, obj)).collect(Collectors.toList()), pageable, totalElements);
+		//return new DataRest(pageImpl);
+		
+		List<UserRest> listUsers = pageImpl.getContent();
+		Resources<UserRest> usersResource = new Resources<>(listUsers);
+		return new DataRest(usersResource, obj);
+		//Resources<UserRest> userResources = new Resources<>(pageImpl);
+		//return new DataRest(userResources);
 	}
 	
 	@GetMapping(path="/{id}/addresses2", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE, "application/hal+json"})
