@@ -6,6 +6,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,11 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
+import com.sean.ws.security.SecurityConstants;
 import com.sean.ws.ui.controller.UserController;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 
 @Component
 public class Utils {
@@ -242,5 +247,25 @@ public class Utils {
     	String returnValue = link.toString();
     	return returnValue.substring(1, returnValue.lastIndexOf(";")-1);
     }
+    
+    public static boolean hasTokenExpired(String token) {
+//		boolean returnValue = false;
+
+//		try {
+			Claims claims = Jwts.parser()
+					.setSigningKey(SecurityConstants.getTokenSecret())
+					.parseClaimsJws(token)
+					.getBody();
+
+			Date tokenExpirationDate = claims.getExpiration();
+			Date todayDate = new Date();
+
+			return tokenExpirationDate.before(todayDate);
+//		} catch (ExpiredJwtException ex) {
+//			returnValue = true;
+//		}
+
+//		return returnValue;
+	}
 
 }
