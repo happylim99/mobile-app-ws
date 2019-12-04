@@ -17,7 +17,7 @@ public interface UserService extends UserDetailsService{
 	List<UserDto> getUsers(int page, int limit);
 	//Page<UserEntity> getAllUsers(int page, int limit);
 	Page<UserDto> getAllUsers2(Pageable pageable);
-	
+	boolean verifyEmailToken(String token);
 	/*
 	@Query(value = "SELECT * FROM Person p WHERE p.firstName = :firstName",
 	        countQuery = "SELECT count(*) Person p WHERE p.firstName = :firstName",

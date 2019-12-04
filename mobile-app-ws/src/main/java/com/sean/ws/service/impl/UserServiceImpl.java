@@ -177,4 +177,24 @@ public class UserServiceImpl implements UserService {
 				.collect(Collectors.toList()), pageable, totalElements);
 	}
 
+	@Override
+	public boolean verifyEmailToken(String token) {
+		boolean returnValue = false;
+
+        // Find user by token
+        UserEntity userEntity = userRepository.findUserByEmailVerificationToken(token);
+
+        if (userEntity != null) {
+            boolean hastokenExpired = Utils.hasTokenExpired(token);
+            if (!hastokenExpired) {
+                userEntity.setEmailVerificationToken(null);
+                userEntity.setEmailVerificationStatus(Boolean.TRUE);
+                userRepository.save(userEntity);
+                returnValue = true;
+            }
+        }
+
+        return returnValue;
+	}
+
 }
