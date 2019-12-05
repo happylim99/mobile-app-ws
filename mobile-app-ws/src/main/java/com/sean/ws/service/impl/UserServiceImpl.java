@@ -22,6 +22,7 @@ import com.sean.ws.exceptions.UserServiceException;
 import com.sean.ws.io.entity.UserEntity;
 import com.sean.ws.io.repository.UserRepository;
 import com.sean.ws.service.UserService;
+import com.sean.ws.shared.AmazonSES;
 import com.sean.ws.shared.Utils;
 import com.sean.ws.shared.dto.AddressDto;
 import com.sean.ws.shared.dto.UserDto;
@@ -69,6 +70,9 @@ public class UserServiceImpl implements UserService {
 		//UserDto returnValue = new UserDto();
 		//BeanUtils.copyProperties(storedUserDetails, returnValue);
 		UserDto returnValue = modelMapper.map(storedUserDetails, UserDto.class);
+		
+		//send email to user for verifying email
+		new AmazonSES().verifyEmail(returnValue);
 
 		return returnValue;
 	}

@@ -165,7 +165,6 @@ public class UserController {
 	//public Resources<UserRest> getAllUsers(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit)
 	public Resources<UserRest> getAllUsers(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="limit", defaultValue="25") int limit, @RequestParam(value="sort", defaultValue="firstName;asc", required=false) String[] sort, HttpServletRequest request)
 	{
-		
 		int thisPage = page-1;
 		
 		Sort allSorts = utils.sortProcessor(sort);
