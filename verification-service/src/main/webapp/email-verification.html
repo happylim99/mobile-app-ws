@@ -11,14 +11,14 @@ $(document).ready(function () {
 	var urlParams = new URLSearchParams(location.search);
 	if(urlParams.has('token'))
 		{
-		alert("The token = " + urlParams.get('token'));
+		verifyToken(urlParams.get('token'));
 		}
 	
 	function verifyToken(tokenValue)
 	{
-		$.get('http://localhost:8080/mobile-app-ws/users/email-verification', {token: tokenValue})
+		$.get('http://ec2-18-139-228-0.ap-southeast-1.compute.amazonaws.com:8080/mobile-app-ws/users/email-verification', {token: tokenValue})
 		.done(function (response) {
-			if(response["#not-successful-result"] === "success")
+			if(response["OperationResult"] === "SUCCESS")
 			{
 				$("#not-successful-result").attr( "style", "display: none !important" );
 				$("#successful-result").attr( "style", "display: block !important" );

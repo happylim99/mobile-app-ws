@@ -27,7 +27,7 @@ public class AmazonSES {
 	final String HTMLBODY = "<h1>Please verify your email address</h1>"
 			+ "<p>Thank you for registering with our mobile app. To complete registration process and be able to log in,"
 			+ " click on the following link: "
-			+ "<a href='http://localhost:8080/verification-service/email-verification.html?token=$tokenValue'>"
+			+ "<a href='http://ec2-18-139-228-0.ap-southeast-1.compute.amazonaws.com:8080/verification-service/email-verification.html?token=$tokenValue'>"
 			+ "Final step to complete your registration" + "</a><br/><br/>"
 			+ "Thank you! And we are waiting for you inside!";
 
@@ -35,7 +35,7 @@ public class AmazonSES {
 	final String TEXTBODY = "Please verify your email address. "
 			+ "Thank you for registering with our mobile app. To complete registration process and be able to log in,"
 			+ " open then the following URL in your browser window: "
-			+ " http://localhost:8080/verification-service/email-verification.html?token=$tokenValue"
+			+ " http://ec2-18-139-228-0.ap-southeast-1.compute.amazonaws.com:8080/verification-service/email-verification.html?token=$tokenValue"
 			+ " Thank you! And we are waiting for you inside!";
 	
 	
@@ -72,10 +72,16 @@ public class AmazonSES {
 		String textBodyWithToken = TEXTBODY.replace("$tokenValue", userDto.getEmailVerificationToken());
 
 		SendEmailRequest request = new SendEmailRequest()
-				.withDestination(new Destination().withToAddresses(userDto.getEmail()))
+				.withDestination(new Destination()
+				.withToAddresses(userDto.getEmail()))
 				.withMessage(new Message()
-						.withBody(new Body().withHtml(new Content().withCharset("UTF-8").withData(htmlBodyWithToken))
-								.withText(new Content().withCharset("UTF-8").withData(textBodyWithToken)))
+				.withBody(new Body()
+				.withHtml(new Content()
+				.withCharset("UTF-8")
+				.withData(htmlBodyWithToken))
+				.withText(new Content()
+				.withCharset("UTF-8")
+				.withData(textBodyWithToken)))
 						.withSubject(new Content().withCharset("UTF-8").withData(SUBJECT)))
 				.withSource(FROM);
 
@@ -89,9 +95,12 @@ public class AmazonSES {
 	  {
 	      boolean returnValue = false;
 	 
+	      System.setProperty("aws.accessKeyId", System.getenv("AWS_ACCESS_KEY_ID")); 
+	      System.setProperty("aws.secretKey", System.getenv("AWS_SECRET_ACCESS_KEY"));
+	      
 	      AmazonSimpleEmailService client = 
 	          AmazonSimpleEmailServiceClientBuilder.standard()
-	            .withRegion(Regions.US_EAST_1).build();
+	            .withRegion(Regions.AP_SOUTHEAST_2).build();
 	      
 	      String htmlBodyWithToken = PASSWORD_RESET_HTMLBODY.replace("$tokenValue", token);
 	             htmlBodyWithToken = htmlBodyWithToken.replace("$firstName", firstName);
