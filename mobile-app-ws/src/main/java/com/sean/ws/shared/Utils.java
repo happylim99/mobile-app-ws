@@ -3,6 +3,10 @@ package com.sean.ws.shared;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -19,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 
 import com.sean.ws.security.SecurityConstants;
 import com.sean.ws.ui.controller.UserController;
@@ -286,6 +292,21 @@ public class Utils {
                 .signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret())
                 .compact();
         return token;
+    }
+    
+    // read file without using @Values
+    public static Properties fetchProperties(String theFile){
+    	
+        Properties properties = new Properties();
+        try {
+            //File file = ResourceUtils.getFile("classpath:mail.properties");
+        	File file = ResourceUtils.getFile(theFile);
+            InputStream in = new FileInputStream(file);
+            properties.load(in);
+        } catch (IOException e) {
+        	System.out.println(e.getMessage());
+        }
+        return properties;
     }
 
 }
