@@ -30,6 +30,7 @@ import com.sean.ws.security.SecurityConstants;
 import com.sean.ws.ui.controller.UserController;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -256,9 +257,9 @@ public class Utils {
     }
     
     public static boolean hasTokenExpired(String token) {
-//		boolean returnValue = false;
+		boolean returnValue = false;
 
-//		try {
+		try {
 			Claims claims = Jwts.parser()
 					.setSigningKey(SecurityConstants.getTokenSecret())
 					.parseClaimsJws(token)
@@ -268,11 +269,11 @@ public class Utils {
 			Date todayDate = new Date();
 
 			return tokenExpirationDate.before(todayDate);
-//		} catch (ExpiredJwtException ex) {
-//			returnValue = true;
-//		}
+		} catch (ExpiredJwtException ex) {
+			returnValue = true;
+		}
 
-//		return returnValue;
+		return returnValue;
 	}
     
     public String generateEmailVerificationToken(String userId) {
