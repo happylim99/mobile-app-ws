@@ -23,6 +23,7 @@ import com.sean.ws.io.entity.PasswordResetTokenEntity;
 import com.sean.ws.io.entity.UserEntity;
 import com.sean.ws.io.repository.PasswordResetTokenRepository;
 import com.sean.ws.io.repository.UserRepository;
+import com.sean.ws.service.EmailService;
 import com.sean.ws.service.UserService;
 import com.sean.ws.shared.AmazonSES;
 import com.sean.ws.shared.Utils;
@@ -47,6 +48,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	AmazonSES amazonSES;
+	
+	@Autowired
+	EmailService emailService;
 
 	@Override
 	public UserDto createUser(UserDto user) {
@@ -80,7 +84,9 @@ public class UserServiceImpl implements UserService {
 		UserDto returnValue = modelMapper.map(storedUserDetails, UserDto.class);
 		
 		//send email to user for verifying email
-		amazonSES.verifyEmail(returnValue);
+		//amazonSES.verifyEmail(returnValue);
+		
+		emailService.verifyEmail(returnValue);
 
 		return returnValue;
 	}

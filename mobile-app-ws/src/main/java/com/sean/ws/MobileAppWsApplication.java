@@ -33,12 +33,14 @@ public class MobileAppWsApplication extends SpringBootServletInitializer{
 	{
 		return new SpringApplicationContext();
 	}
-	
-	@Bean(name="AppProperties")
+	/*
+	//@Bean(name="AppProperties")
+	@Bean
 	public AppProperties getAppProperties()
 	{
 		return new AppProperties();
 	}
+	*/
 	/*
 	public static String reverseHello(String str)
 	{

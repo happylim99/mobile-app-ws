@@ -1,5 +1,6 @@
 package com.sean.ws.security;
 
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,6 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.sean.ws.service.UserService;
 
 @Configuration
+@ComponentScan(basePackages = {
+		"com.sean.ws2"
+})
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 

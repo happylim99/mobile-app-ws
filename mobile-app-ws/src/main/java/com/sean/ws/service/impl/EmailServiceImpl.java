@@ -23,6 +23,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.sean.ws.service.EmailService;
+import com.sean.ws.shared.dto.UserDto;
 import com.sean.ws.ui.model.request.EmailRequestModel;
 
 @Service
@@ -112,5 +113,53 @@ public class EmailServiceImpl implements EmailService {
 		} catch (MessagingException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	@Override
+	public void verifyEmail(UserDto userDto)
+	{
+		final String SUBJECT = "Email Verification";
+		// The HTML body for the email.
+		final String HTMLBODY = "<h1>Please verify your email address</h1>"
+				+ "<p>Thank you for registering with our mobile app. To complete registration process and be able to log in,"
+				+ " click on the following link: "
+				+ "<a href='http://localhost:8080/verification-service/email-verification.html?token=$tokenValue'>"
+				+ "Final step to complete your registration" + "</a><br/><br/>"
+				+ "Thank you! And we are waiting for you inside!";
+		final String htmlBodyWithToken = HTMLBODY.replace("$tokenValue", userDto.getEmailVerificationToken());
+		try {
+			Session session = null;
+			MimeMessage message = new MimeMessage(session);
+			try {
+				message.setFrom(new InternetAddress("no-reply@gmail.com", "no-reply"));
+		    } catch (UnsupportedEncodingException e) {
+		        //return e.getMessage();
+		    }
+			
+			message.setRecipient(Message.RecipientType.TO, new InternetAddress(userDto.getEmail()));
+			message.setSubject(SUBJECT);
+			
+			Multipart multipart = new MimeMultipart();
+
+	        MimeBodyPart textBodyPart = new MimeBodyPart();
+	        textBodyPart.setText(htmlBodyWithToken, "utf-8", "html");
+	        
+	        MimeBodyPart attachmentBodyPart= new MimeBodyPart();
+	        DataSource source = new FileDataSource("C:\\ccc\\test.txt"); // ex : "C:\\test.pdf"
+	        attachmentBodyPart.setDataHandler(new DataHandler(source));
+	        attachmentBodyPart.setFileName("aaa.txt"); // ex : "test.pdf"
+			
+	        multipart.addBodyPart(textBodyPart);  // add the text part
+	        //multipart.addBodyPart(attachmentBodyPart); // add the attachement part
+
+	        message.setContent(multipart);
+			
+	        javaMailSender.send(message);
+	        
+	        System.out.println("Email sent");
+		} catch (MessagingException e) {
+			throw new RuntimeException(e);
+		} 
+		
 	}
 }

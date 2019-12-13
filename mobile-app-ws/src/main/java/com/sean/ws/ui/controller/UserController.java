@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sean.ws.security.AppProperties;
 import com.sean.ws.service.AddressService;
 import com.sean.ws.service.UserService;
 import com.sean.ws.shared.Utils;
@@ -48,11 +49,18 @@ import com.sean.ws.ui.model.response.DataRest;
 import com.sean.ws.ui.model.response.OperationStatusModel;
 import com.sean.ws.ui.model.response.RequestOperationStatus;
 import com.sean.ws.ui.model.response.UserRest;
+import com.sean.ws2.TestComponentScan;
 
 @EnableHypermediaSupport(type = { HypermediaType.HAL })
 @RestController
 @RequestMapping("/users") //http:localhost:8080/users
 public class UserController {
+	
+	@Autowired
+	TestComponentScan testComponentScan;
+	
+	//@Autowired
+	private AppProperties appProperties;
 	
 	@Autowired
 	UserService userService;
@@ -65,11 +73,24 @@ public class UserController {
 	
 	@Autowired
 	Utils utils;
+	
+	
+	public UserController() {
+		super();
+	}
+	
+	@Autowired
+	public UserController(AppProperties appProperties) {
+		super();
+		this.appProperties = appProperties;
+	}
+	
 	/*
 	@Autowired
 	private ServletContext context;
 	context.getPath();
 	*/
+	
 	
 	@GetMapping("/hello")
 	public String hello()
@@ -77,7 +98,12 @@ public class UserController {
 		String awsId = System.getenv("AWS_ACCESS_KEY_ID");
 		String awsKey = System.getenv("AWS_SECRET_ACCESS_KEY");
 		String returnValue = "Id : " + awsId + " , " + "Key : " + awsKey;
-		return returnValue;
+		//return returnValue;
+		
+		//String rtn2 = testComponentScan.getTokenSecret();
+		//String rtn2 = utils.generateEmailVerificationToken("abcd");
+		String rtn2 = appProperties.getTokenSecret();
+		return rtn2;
 	}
 	
 	@GetMapping(path="/{id}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
@@ -225,7 +251,7 @@ public class UserController {
 		int totalPages = users.getTotalPages();
 		int totalElements = (int)users.getTotalElements();
 		int betweenSize = 3;
-		List<Link> pageInfo = utils.paginationLinks(isFirst, isLast, totalPages, totalElements, page, limit, sort, betweenSize);
+		//List<Link> pageInfo = utils.paginationLinks(isFirst, isLast, totalPages, totalElements, page, limit, sort, betweenSize);
     	
 		Object[] obj = {isFirst, isLast, totalPages, totalElements, page, limit, sort, betweenSize};
 		
