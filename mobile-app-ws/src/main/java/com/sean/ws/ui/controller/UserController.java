@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sean.ws.io.entity.UserEntity;
 import com.sean.ws.security.AppProperties;
 import com.sean.ws.service.AddressService;
 import com.sean.ws.service.UserService;
@@ -104,6 +105,18 @@ public class UserController {
 		//String rtn2 = utils.generateEmailVerificationToken("abcd");
 		String rtn2 = appProperties.getTokenSecret();
 		return rtn2;
+	}
+	
+	@GetMapping("/report/get-verified-users")
+	public Page<UserEntity> getVerifiedUsers()
+	{
+		return userService.getVerifiedUsers();
+	}
+	
+	@GetMapping(path="/report/get-userentity/{id}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	public UserEntity getUserEntity(@PathVariable String id)
+	{
+		return userService.getUserEntity(id);
 	}
 	
 	@GetMapping(path="/{id}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})

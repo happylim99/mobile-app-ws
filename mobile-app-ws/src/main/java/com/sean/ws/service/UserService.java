@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import com.sean.ws.io.entity.UserEntity;
 import com.sean.ws.shared.dto.UserDto;
 
 public interface UserService extends UserDetailsService{
@@ -20,6 +21,8 @@ public interface UserService extends UserDetailsService{
 	boolean verifyEmailToken(String token);
 	boolean requestPasswordReset(String email);
 	boolean resetPassword(String token, String password);
+	Page<UserEntity> getVerifiedUsers();
+	UserEntity getUserEntity(String userId);
 	/*
 	@Query(value = "SELECT * FROM Person p WHERE p.firstName = :firstName",
 	        countQuery = "SELECT count(*) Person p WHERE p.firstName = :firstName",

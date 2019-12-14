@@ -1,7 +1,10 @@
 package com.sean.ws.service.impl;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -154,9 +157,22 @@ public class EmailServiceImpl implements EmailService {
 
 	        message.setContent(multipart);
 			
-	        javaMailSender.send(message);
+	        //javaMailSender.send(message);
 	        
-	        System.out.println("Email sent");
+	        ExecutorService emailExecutor = Executors.newSingleThreadExecutor();
+	        emailExecutor.execute(new Runnable() {
+	            @Override
+	            public void run() {
+	                try {
+	                	javaMailSender.send(message);
+	                } catch (Exception e) {
+	                	System.out.println(e.getMessage());
+	                }
+	            }
+	        });
+	        emailExecutor.shutdown();
+	        
+	        
 		} catch (MessagingException e) {
 			throw new RuntimeException(e);
 		} 

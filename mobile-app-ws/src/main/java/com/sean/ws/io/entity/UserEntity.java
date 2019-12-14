@@ -10,10 +10,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@Entity(name="users")
+//not work with JPQL
+//@Entity(name="users")
+@Entity
+@Table(name="users")
 public class UserEntity implements Serializable{
 
 	private static final long serialVersionUID = -8732757708190313677L;
@@ -120,6 +124,12 @@ public class UserEntity implements Serializable{
 
 	public void setAddresses(List<AddressEntity> addresses) {
 		this.addresses = addresses;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("FirstName : " + firstName + "\nEmail : " + email);
+		//return String.format("UserEntity [firstName=%s, email=%s]", firstName, email);
 	}
 
 }

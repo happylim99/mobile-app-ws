@@ -279,4 +279,23 @@ boolean returnValue = false;
         return returnValue;
 	}
 
+	@Override
+	public Page<UserEntity> getVerifiedUsers() {
+		Pageable pageableRequest = PageRequest.of(1, 2);
+		Page<UserEntity> page = userRepository.findAllUsersWithConfirmedEmailAddress(pageableRequest);
+		
+		return page;
+	}
+	
+	public String getVerifiedUsers2(Pageable pageable) {
+		
+		return "levis";
+	}
+
+	@Override
+	public UserEntity getUserEntity(String userId) {
+		UserEntity userEntity = userRepository.findUserEntityByUserId(userId);
+		return userEntity;
+	}
+
 }
