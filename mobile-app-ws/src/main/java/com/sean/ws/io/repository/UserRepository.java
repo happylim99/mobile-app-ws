@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -12,13 +14,16 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sean.ws.io.entity.UserEntity;
+import com.sean.ws.io.repository.custom.UserRepositoryCustom;
 
-@Repository
+//@Repository do not need since we extends JpaRepository
 //public interface UserRepository extends CrudRepository<UserEntity, Long> {
-public interface UserRepository extends PagingAndSortingRepository<UserEntity, Long> {
+//public interface UserRepository extends PagingAndSortingRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long>, UserRepositoryCustom {
 	UserEntity findByEmail(String email);
 	UserEntity findByUserId(String userId);
 	UserEntity findUserByEmailVerificationToken(String token);
+	//List<UserEntity> findAllUsers(Sort sort);
 	
 	@Query(value="select * from Users u where u.EMAIL_VERIFICATION_STATUS = 1", 
 			countQuery="select count(*) from Users u where u.EMAIL_VERIFICATION_STATUS = 1", 
@@ -61,5 +66,9 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
 	void updateUserEntityEmailVerificationStatus(
 			@Param("emailVerificationStatus") boolean emailVerificationStatus,
 			@Param("userId") String userId);
+	
+	//HQL
+	@Query("from UserEntity u where u.userId=:userId")
+	UserEntity findUserEntityByUserIdHql(@Param("userId") String userId);
 	
 }

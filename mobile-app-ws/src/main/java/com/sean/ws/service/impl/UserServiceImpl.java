@@ -1,8 +1,13 @@
 package com.sean.ws.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -17,10 +22,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sean.ws.exceptions.UserServiceException;
+import com.sean.ws.io.entity.HelloEntity;
 import com.sean.ws.io.entity.PasswordResetTokenEntity;
 import com.sean.ws.io.entity.UserEntity;
+import com.sean.ws.io.repository.HelloRepository;
 import com.sean.ws.io.repository.PasswordResetTokenRepository;
 import com.sean.ws.io.repository.UserRepository;
 import com.sean.ws.service.EmailService;
@@ -32,10 +41,14 @@ import com.sean.ws.shared.dto.UserDto;
 import com.sean.ws.ui.model.response.ErrorMessages;
 
 @Service
+@Transactional(rollbackFor=Exception.class)
 public class UserServiceImpl implements UserService {
 
 	@Autowired
-	UserRepository userRepository;
+	public UserRepository userRepository;
+	
+	@Autowired
+	public HelloRepository helloRepository;
 
 	@Autowired
 	Utils utils;
@@ -51,8 +64,13 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	EmailService emailService;
+	
+	@Autowired
+	EntityManager entityManager;
 
 	@Override
+	//@Transactional(propagation = Propagation.REQUIRED, rollbackFor=Exception.class)
+	//@Transactional
 	public UserDto createUser(UserDto user) {
 
 		if (userRepository.findByEmail(user.getEmail()) != null)
@@ -77,10 +95,16 @@ public class UserServiceImpl implements UserService {
 		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		userEntity.setEmailVerificationToken(utils.generateEmailVerificationToken(publicUserId));
 
+		HelloEntity helloEntity = new HelloEntity();
+		helloEntity.setDescription("hello");
+		helloRepository.save(helloEntity);
+		
 		UserEntity storedUserDetails = userRepository.save(userEntity);
-
+		userRepository.save(null);
+		
 		//UserDto returnValue = new UserDto();
 		//BeanUtils.copyProperties(storedUserDetails, returnValue);
+		
 		UserDto returnValue = modelMapper.map(storedUserDetails, UserDto.class);
 		
 		//send email to user for verifying email
@@ -296,6 +320,27 @@ boolean returnValue = false;
 	public UserEntity getUserEntity(String userId) {
 		UserEntity userEntity = userRepository.findUserEntityByUserId(userId);
 		return userEntity;
+	}
+
+	@Override
+	public UserEntity findUserEntityByUserIdHql(String userId) {
+		return userRepository.findUserEntityByUserIdHql(userId);
+	}
+	
+	public List<UserEntity> hqlGetUsers() {
+		
+        Query query = entityManager.createQuery("from UserEntity");
+        //List<UserEntity> users = query.getResultList();
+        List<UserEntity> users = query.getResultList();
+        //users.forEach(u -> System.out.println(u.getFirstname()));
+        //return "See Console";
+        return users;
+        
+    }
+
+	@Override
+	public List<UserEntity> fetchUserByFirstNameAndLastNameCustom(String firstName, String lastName) {
+		return userRepository.findUserByFirstNameAndLastNameCustom(firstName, lastName);
 	}
 
 }

@@ -1,16 +1,29 @@
 package com.sean.ws;
 
+import javax.persistence.EntityManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.sean.ws.security.AppProperties;
+import com.sean.ws.ui.controller.UserController;
 
-@SpringBootApplication
-public class MobileAppWsApplication extends SpringBootServletInitializer{
+@SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan
+//@EnableTransactionManagement
+public class MobileAppWsApplication extends SpringBootServletInitializer implements CommandLineRunner{
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	@Autowired
+	private UserController userController;
 	
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
@@ -33,6 +46,13 @@ public class MobileAppWsApplication extends SpringBootServletInitializer{
 	{
 		return new SpringApplicationContext();
 	}
+	/*
+	@Bean 
+	public EntityManager entityManager()
+	{
+		return new EntityManager();
+	}
+	*/
 	/*
 	//@Bean(name="AppProperties")
 	@Bean
@@ -59,4 +79,11 @@ public class MobileAppWsApplication extends SpringBootServletInitializer{
 		return reverseStr;
 	}
 	*/
+
+	@Override
+	public void run(String... args) throws Exception {
+		//logger.info(String.valueOf(userController.getHqlUsers()));
+		//logger.info(userController.hello());
+		
+	}
 }

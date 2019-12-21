@@ -309,5 +309,28 @@ public class Utils {
         }
         return properties;
     }
+    /*
+    public static Properties loadProperties(String resourceFileName) throws IOException {
+        Properties configuration = new Properties();
+        InputStream inputStream = PropertiesLoader.class
+          .getClassLoader()
+          .getResourceAsStream(resourceFileName);
+        configuration.load(inputStream);
+        inputStream.close();
+        return configuration;
+    }
+    */
+    public static String plateFormatProcessor(String str)
+    {
+    	//add a space after the numbers
+    	String step1 = str.replaceAll("(-?\\d\\.?\\d*)([^\\d\\s])", "$1 $2");
+    	
+    	//add a space before the numbers
+    	String step2 = step1.replaceAll("([^0-9\\-\\s])(-?\\d\\.?\\d*)", "$1 $2");
+    	
+    	String returnValue = step2.trim().replaceAll(" +", " ");
+    	
+    	return returnValue;
+    }
 
 }

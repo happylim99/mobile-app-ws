@@ -4,6 +4,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +27,7 @@ import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,6 +78,8 @@ public class UserController {
 	@Autowired
 	Utils utils;
 	
+	@Value("${test}")
+	private String rt;
 	
 	public UserController() {
 		super();
@@ -94,8 +99,10 @@ public class UserController {
 	
 	
 	@GetMapping("/hello")
-	public String hello()
+	public List<Object> hello() throws Exception
 	{
+		//throw new Exception();
+		
 		String awsId = System.getenv("AWS_ACCESS_KEY_ID");
 		String awsKey = System.getenv("AWS_SECRET_ACCESS_KEY");
 		String returnValue = "Id : " + awsId + " , " + "Key : " + awsKey;
@@ -103,8 +110,29 @@ public class UserController {
 		
 		//String rtn2 = testComponentScan.getTokenSecret();
 		//String rtn2 = utils.generateEmailVerificationToken("abcd");
-		String rtn2 = appProperties.getTokenSecret();
-		return rtn2;
+//		String rtn2 = appProperties.getTokenSecret();
+//		return rtn2;
+//		String rtn3 = utils.generateAddressId(30);
+//		return rtn3;
+		//String rt = System.getenv("spring.datasource.username");
+		//List<Object> obj = new Arraylist<>();
+		//obj.add(rt);
+		String myString = Utils.plateFormatProcessor(" www   888   w ");
+		List<Object> obj = Arrays.asList(myString);
+		return obj;
+		
+	}
+	
+	@GetMapping("/report/criteria")
+	public List<UserEntity> fetchUserByFirstNameAndLastNameCustom()
+	{
+		return userService.fetchUserByFirstNameAndLastNameCustom("test3", "test3");
+	}
+	
+	@GetMapping("/report/get-hql-users")
+	public List<UserEntity> getHqlUsers()
+	{
+		return userService.hqlGetUsers();
 	}
 	
 	@GetMapping("/report/get-verified-users")
@@ -117,6 +145,12 @@ public class UserController {
 	public UserEntity getUserEntity(@PathVariable String id)
 	{
 		return userService.getUserEntity(id);
+	}
+	
+	@GetMapping(path="/report/get-userentity/hql/{id}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	public UserEntity getUserEntityHql(@PathVariable String id)
+	{
+		return userService.findUserEntityByUserIdHql(id);
 	}
 	
 	@GetMapping(path="/{id}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
